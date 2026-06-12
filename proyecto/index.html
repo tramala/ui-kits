@@ -1,0 +1,45 @@
+<!-- @dsCard group="Proyecto" viewport="1280x820" name="Página de documental" subtitle="Reproductor, sinopsis, ficha técnica y fotogramas" -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Roja tierra nuestra — TRAMALATIERRA</title>
+<link rel="stylesheet" href="../../styles.css">
+<script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+<script src="../../_ds_bundle.js"></script>
+<style> body { margin: 0; } </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const NS = window.TRAMALATIERRADesignSystem_b403e3;
+    const { SiteHeader, SiteFooter, PlayerHero, Ficha, Stills } = NS;
+
+    function App() {
+      const [playing, setPlaying] = React.useState(false);
+      return (
+        <div style={{ background: "var(--bg)", minHeight: "100vh" }}>
+          <SiteHeader active="Obra" />
+          <PlayerHero onPlay={() => setPlaying(true)} />
+          <Ficha />
+          <Stills />
+          <SiteFooter />
+          {playing && (
+            <div onClick={() => setPlaying(false)} style={{ position: "fixed", inset: 0, background: "var(--scrim)", display: "grid", placeItems: "center", zIndex: 50, backdropFilter: "blur(6px)" }}>
+              <div style={{ textAlign: "center" }}>
+                <p style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-xs)", letterSpacing: "var(--tracking-label)", textTransform: "uppercase", color: "var(--ocre-400)" }}>Reproduciendo · placeholder</p>
+                <p style={{ fontFamily: "var(--font-display)", textTransform: "uppercase", fontSize: "var(--text-2xl)", color: "#fff", margin: "8px 0 0" }}>Roja tierra nuestra</p>
+                <p style={{ color: "var(--text-muted)", marginTop: 18, fontSize: "var(--text-sm)" }}>(Tocá para cerrar)</p>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+    ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+  </script>
+</body>
+</html>

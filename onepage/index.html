@@ -1,0 +1,322 @@
+<!-- @dsCard group="Sitio" viewport="1280x900" name="One-page — documentales (parallax)" subtitle="Scroll vertical con parallax, una sección por documental real del sitio" -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TRAMALATIERRA — Documentales</title>
+<link rel="stylesheet" href="../../styles.css">
+<style>
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--carbon-950); color: var(--text); overflow-x: hidden; }
+
+  /* ---------- Barra de progreso ---------- */
+  .progress { position: fixed; top: 0; left: 0; height: 3px; width: 0%; background: var(--tierra-500); z-index: 60; transition: width 80ms linear; }
+
+  /* ---------- Header ---------- */
+  header.nav { position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px var(--gutter); transition: background var(--dur-base) var(--ease-out), border-color var(--dur-base) var(--ease-out), padding var(--dur-base) var(--ease-out);
+    border-bottom: 1px solid transparent; }
+  header.nav.solid { background: color-mix(in oklab, var(--carbon-950) 86%, transparent); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 14px var(--gutter); }
+  .brand { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; }
+  .brand img { width: 28px; height: 28px; }
+  .brand .word { font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: .01em; font-size: 20px; line-height: 1; }
+  .brand .word .a { color: var(--hueso-050); } .brand .word .b { color: var(--tierra-500); }
+  header.nav nav { display: flex; gap: 26px; }
+  header.nav nav a { font-family: var(--font-sans); font-weight: 500; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); }
+  header.nav nav a:hover { color: var(--hueso-050); }
+  @media (max-width: 760px){ header.nav nav { display: none; } }
+
+  /* ---------- Dots laterales ---------- */
+  .dots { position: fixed; right: 26px; top: 50%; transform: translateY(-50%); z-index: 45; display: flex; flex-direction: column; gap: 14px; }
+  .dots button { width: 11px; height: 11px; padding: 0; border-radius: 50%; border: 1.5px solid var(--carbon-300); background: transparent; cursor: pointer; transition: all var(--dur-base) var(--ease-out); }
+  .dots button.active { background: var(--tierra-500); border-color: var(--tierra-500); transform: scale(1.25); }
+  @media (max-width: 760px){ .dots { display: none; } }
+
+  /* ---------- Secciones full-screen ---------- */
+  section.scene { position: relative; min-height: 100vh; display: flex; align-items: center; overflow: hidden; }
+  .layer { position: absolute; inset: -20% 0; will-change: transform; }
+  .layer .photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .layer .grad { position: absolute; inset: 0; }
+  .scrim { position: absolute; inset: 0; z-index: 2; }
+  .scrim.bottom { background: linear-gradient(to top, var(--carbon-950) 4%, color-mix(in oklab,var(--carbon-950) 30%, transparent) 45%, transparent 75%); }
+  .scrim.left { background: linear-gradient(to right, var(--carbon-950) 0%, color-mix(in oklab,var(--carbon-950) 55%, transparent) 42%, transparent 70%); }
+  .scrim.right { background: linear-gradient(to left, var(--carbon-950) 0%, color-mix(in oklab,var(--carbon-950) 55%, transparent) 42%, transparent 70%); }
+  .grain-ov { position: absolute; inset: 0; z-index: 3; pointer-events: none; opacity: .06; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+  .wrap { position: relative; z-index: 5; width: 100%; max-width: var(--container-xl); margin: 0 auto; padding: 0 var(--gutter); }
+  .col { max-width: 640px; }
+  .col.right { margin-left: auto; text-align: right; }
+
+  /* ---------- HERO ---------- */
+  .hero .titlewrap { position: relative; z-index: 5; width: 100%; max-width: var(--container-xl); margin: 0 auto; padding: 0 var(--gutter); }
+  .hero h1 { font-size: clamp(3.5rem, 13vw, 12rem); line-height: .82; color: #fff; margin: 0; }
+  .hero h1 .b { color: var(--tierra-500); }
+  .hero .tagline { font-family: var(--font-mono); font-size: clamp(12px,1.6vw,15px); letter-spacing: .3em; text-transform: uppercase; color: var(--ocre-300); margin-top: 26px; }
+  .hero .sub { font-family: var(--font-serif); font-style: italic; font-size: clamp(1.1rem,2.4vw,1.6rem); color: var(--hueso-050); margin-top: 22px; max-width: 30ch; }
+  .scrollcue { position: absolute; left: 50%; bottom: 34px; transform: translateX(-50%); z-index: 6; display: flex; flex-direction: column; align-items: center; gap: 10px; color: var(--carbon-200); }
+  .scrollcue .l { font-family: var(--font-mono); font-size: 10px; letter-spacing: .26em; text-transform: uppercase; }
+  .scrollcue .mouse { width: 22px; height: 36px; border: 2px solid var(--carbon-300); border-radius: 12px; position: relative; }
+  .scrollcue .mouse::after { content: ""; position: absolute; left: 50%; top: 7px; width: 3px; height: 7px; border-radius: 2px; background: var(--carbon-200); transform: translateX(-50%); animation: wheel 1.6s var(--ease-in-out) infinite; }
+  @keyframes wheel { 0%{opacity:0; transform: translate(-50%,0);} 40%{opacity:1;} 100%{opacity:0; transform: translate(-50%,12px);} }
+
+  /* ---------- Contenido de documental ---------- */
+  .idx { font-family: var(--font-display); font-weight: 700; font-size: clamp(3rem,7vw,7rem); line-height: 1; color: transparent; -webkit-text-stroke: 1.5px var(--tierra-400); margin-bottom: 6px; }
+  .kicker { font-family: var(--font-mono); font-size: 12px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--ocre-400); }
+  .scene h2 { font-size: clamp(2.6rem, 7vw, 6rem); line-height: .9; color: #fff; margin: 14px 0 0; }
+  .desc { font-family: var(--font-serif); font-style: italic; font-size: clamp(1.05rem,2.2vw,1.5rem); line-height: 1.25; color: var(--hueso-050); margin: 22px 0 0; }
+  .meta { font-family: var(--font-mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--carbon-200); margin-top: 22px; }
+  .badge { display: inline-block; font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; padding: 6px 11px; border-radius: 2px; background: var(--tierra-500); color: #fff; }
+  .ver { display: inline-flex; align-items: center; gap: 10px; white-space: nowrap; margin-top: 30px; font-family: var(--font-sans); font-weight: 700; font-size: 14px; letter-spacing: .08em; text-transform: uppercase; color: #fff; background: var(--tierra-500); border: 2px solid var(--tierra-500); padding: 13px 22px; border-radius: var(--radius-sm); text-decoration: none; transition: filter var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out); }
+  .ver:hover { filter: brightness(1.08); color: #fff; }
+  .ver:active { transform: translateY(1px); }
+  .ver.ghost { background: transparent; color: #fff; border-color: rgba(255,255,255,.6); }
+  .col.right .ver, .col.right .badge { } /* alineación heredada */
+  .col.right .meta, .col.right .desc { margin-left: auto; }
+
+  /* ---------- Reveal ---------- */
+  .reveal { opacity: 0; transform: translateY(34px); transition: opacity .8s var(--ease-out), transform .8s var(--ease-out); }
+  .reveal.in { opacity: 1; transform: none; }
+  .reveal.d1 { transition-delay: .08s; } .reveal.d2 { transition-delay: .16s; }
+  .reveal.d3 { transition-delay: .24s; } .reveal.d4 { transition-delay: .32s; }
+
+  /* ---------- Cierre ---------- */
+  .outro { min-height: 70vh; display: flex; align-items: center; background: var(--carbon-900); border-top: 1px solid var(--border); }
+  .outro h2 { font-size: clamp(2.4rem,6vw,5rem); color: #fff; }
+  .outro .mono { font-family: var(--font-mono); font-size: 13px; letter-spacing: .2em; text-transform: uppercase; color: var(--ocre-400); }
+  footer.foot { padding: 40px var(--gutter); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px; border-top: 1px solid var(--border); background: var(--carbon-950); font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--text-faint); }
+  footer.foot a { color: var(--text-muted); }
+
+  @media (prefers-reduced-motion: reduce){
+    .layer { transform: none !important; }
+    .reveal { opacity: 1; transform: none; transition: none; }
+    .scrollcue .mouse::after { animation: none; }
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+  <div class="progress" id="progress"></div>
+
+  <header class="nav" id="nav">
+    <a class="brand" href="#top">
+      <img src="../../assets/logo-isotipo.svg" alt="">
+      <span class="word"><span class="a">TRAMA</span><span class="b">LATIERRA</span></span>
+    </a>
+    <nav>
+      <a href="#doc-1">Obra</a>
+      <a href="#doc-2">Documentales</a>
+      <a href="#outro">Contacto</a>
+    </nav>
+  </header>
+
+  <div class="dots" id="dots"></div>
+
+  <!-- ============ HERO ============ -->
+  <section class="scene hero" id="top" data-dot="Inicio">
+    <div class="layer" data-speed="0.22">
+      <div class="grad" style="background: radial-gradient(120% 90% at 75% 8%, #c98a3c 0%, transparent 42%), linear-gradient(155deg, #7c2c12 0%, #2e251b 58%, #0e0b08 100%);"></div>
+      <img class="photo" style="filter: var(--img-warm); opacity:.62;" src="https://tramalatierra.com.ar/assets/images/dsc06387-1152x769.jpg" alt="" referrerpolicy="no-referrer">
+    </div>
+    <div class="scrim bottom"></div>
+    <div class="grain-ov"></div>
+    <div class="titlewrap">
+      <h1 class="reveal in">TRAMA<span class="b">LATIERRA</span></h1>
+      <div class="tagline reveal in d1">inestable acción audiovisual</div>
+      <p class="sub reveal in d2">Documentales, fotografía y diseño de Juan Alaimes. El territorio que se camina, se filma y se vuelve a contar.</p>
+    </div>
+    <div class="scrollcue"><span class="l">Scroll</span><span class="mouse"></span></div>
+  </section>
+
+  <!-- ============ 01 · las evidencias del agua ============ -->
+  <section class="scene" id="doc-1" data-dot="El agua">
+    <div class="layer" data-speed="0.18">
+      <div class="grad" style="background: linear-gradient(150deg,#2c4244,#15110c);"></div>
+      <img class="photo" style="filter: var(--img-warm); opacity:.7;" src="https://tramalatierra.com.ar/assets/images/dsc06461-1152x769.jpg" alt="" referrerpolicy="no-referrer">
+    </div>
+    <div class="scrim left"></div>
+    <div class="grain-ov"></div>
+    <div class="wrap"><div class="col">
+      <div class="idx reveal">01</div>
+      <div class="kicker reveal d1">Documental</div>
+      <h2 class="reveal d1">Las evidencias<br>del agua</h2>
+      <p class="desc reveal d2">El agua como prueba y como memoria del territorio.</p>
+      <div class="meta reveal d3">Vimeo · Largometraje documental</div>
+      <a class="ver reveal d4" href="https://vimeo.com/864026357" target="_blank" rel="noopener">Ver en Vimeo →</a>
+    </div></div>
+  </section>
+
+  <!-- ============ 02 · 24 Nora ============ -->
+  <section class="scene" id="doc-2" data-dot="24 Nora">
+    <div class="layer" data-speed="0.18">
+      <div class="grad" style="background: linear-gradient(150deg,#7c2c12,#0e0b08);"></div>
+      <img class="photo" style="filter: var(--img-bw) brightness(.92); opacity:.78;" src="https://tramalatierra.com.ar/assets/images/marcha-velas-2jpg-1152x648.jpg" alt="" referrerpolicy="no-referrer">
+    </div>
+    <div class="scrim right"></div>
+    <div class="grain-ov"></div>
+    <div class="wrap"><div class="col right">
+      <div class="idx reveal">02</div>
+      <div class="kicker reveal d1">Retrato</div>
+      <h2 class="reveal d1">24 Nora</h2>
+      <p class="desc reveal d2">Un día en la vida de Norita Cortiñas.</p>
+      <div class="meta reveal d3">Canal Abierto · Especial</div>
+      <a class="ver reveal d4" href="https://canalabierto.com.ar/especiales/24Nora/" target="_blank" rel="noopener">Ver el especial →</a>
+    </div></div>
+  </section>
+
+  <!-- ============ 03 · Escuelas rigurosamente fumigadas ============ -->
+  <section class="scene" id="doc-3" data-dot="Escuelas">
+    <div class="layer" data-speed="0.18">
+      <div class="grad" style="background: linear-gradient(150deg,#a9712a,#211a13);"></div>
+      <img class="photo" style="filter: var(--img-warm); opacity:.66;" src="https://tramalatierra.com.ar/assets/images/a-palacio-pizurno-1152x648.jpg" alt="" referrerpolicy="no-referrer">
+    </div>
+    <div class="scrim left"></div>
+    <div class="grain-ov"></div>
+    <div class="wrap"><div class="col">
+      <div class="idx reveal">03</div>
+      <div class="kicker reveal d1">Investigación</div>
+      <h2 class="reveal d1">Escuelas rigurosamente fumigadas</h2>
+      <p class="desc reveal d2">Aulas en el borde del modelo agroquímico.</p>
+      <div class="meta reveal d3">tramalatierra.com.ar · Documental</div>
+      <a class="ver reveal d4" href="https://tramalatierra.com.ar/escuelas-rigurosamente-fumigadas/" target="_blank" rel="noopener">Ver más →</a>
+    </div></div>
+  </section>
+
+  <!-- ============ 04 · Roja tierra nuestra ============ -->
+  <section class="scene" id="doc-4" data-dot="Roja tierra">
+    <div class="layer" data-speed="0.18">
+      <div class="grad" style="background: linear-gradient(150deg,#9a3818,#2e251b);"></div>
+      <img class="photo" style="filter: var(--img-warm); opacity:.7;" src="https://tramalatierra.com.ar/assets/images/dsc06387-1152x769.jpg" alt="" referrerpolicy="no-referrer">
+    </div>
+    <div class="scrim right"></div>
+    <div class="grain-ov"></div>
+    <div class="wrap"><div class="col right">
+      <div class="idx reveal">04</div>
+      <div class="kicker reveal d1">Documental</div>
+      <h2 class="reveal d1">Roja tierra<br>nuestra</h2>
+      <p class="desc reveal d2">La tierra que se camina, se disputa y se vuelve a contar.</p>
+      <div class="meta reveal d3">YouTube · Documental</div>
+      <a class="ver reveal d4" href="https://youtu.be/i8rW2Kj9YGM" target="_blank" rel="noopener">Ver en YouTube →</a>
+    </div></div>
+  </section>
+
+  <!-- ============ 05 · Beatitud ============ -->
+  <section class="scene" id="doc-5" data-dot="Beatitud">
+    <div class="layer" data-speed="0.18">
+      <div class="grad" style="background: radial-gradient(90% 70% at 30% 30%, #6b5b48 0%, transparent 55%), linear-gradient(150deg,#463a2c,#0e0b08);"></div>
+    </div>
+    <div class="scrim left"></div>
+    <div class="grain-ov"></div>
+    <div class="wrap"><div class="col">
+      <div class="idx reveal">05</div>
+      <div class="kicker reveal d1">Cortometraje</div>
+      <h2 class="reveal d1">Beatitud</h2>
+      <p class="desc reveal d2">Pieza audiovisual.</p>
+      <div class="meta reveal d3">Vimeo</div>
+      <a class="ver reveal d4" href="https://vimeo.com/454073600" target="_blank" rel="noopener">Ver en Vimeo →</a>
+    </div></div>
+  </section>
+
+  <!-- ============ 06 · El monte que marcha ============ -->
+  <section class="scene" id="doc-6" data-dot="El monte">
+    <div class="layer" data-speed="0.18">
+      <div class="grad" style="background: linear-gradient(150deg,#2f3a24,#15110c);"></div>
+      <img class="photo" style="filter: var(--img-warm); opacity:.68;" src="https://tramalatierra.com.ar/assets/images/dsc06461-1152x769.jpg" alt="" referrerpolicy="no-referrer">
+    </div>
+    <div class="scrim right"></div>
+    <div class="grain-ov"></div>
+    <div class="wrap"><div class="col right">
+      <div class="idx reveal">06</div>
+      <div class="kicker reveal d1">Documental</div>
+      <h2 class="reveal d1">El monte<br>que marcha</h2>
+      <p class="desc reveal d2">El monte que avanza donde otros ven frontera.</p>
+      <div class="meta reveal d3">YouTube · Documental</div>
+      <a class="ver reveal d4" href="https://www.youtube.com/watch?v=efXoxlzlt1s" target="_blank" rel="noopener">Ver en YouTube →</a>
+    </div></div>
+  </section>
+
+  <!-- ============ CIERRE ============ -->
+  <section class="outro" id="outro" data-dot="Contacto">
+    <div class="wrap">
+      <div class="mono reveal">— inestable acción audiovisual</div>
+      <h2 class="reveal d1">Filmemos<br>el territorio.</h2>
+      <p class="desc reveal d2" style="font-style:normal; font-family: var(--font-sans); color: var(--text-muted); max-width: 50ch;">Realización documental, fotografía y diseño. Juan Alaimes — TRAMALATIERRA.</p>
+      <a class="ver reveal d3" href="mailto:hola@tramalatierra.com.ar">Escribir →</a>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span>© 2026 TRAMALATIERRA · Juan Alaimes</span>
+    <span><a href="https://www.tramalatierra.com.ar" target="_blank" rel="noopener">tramalatierra.com.ar</a></span>
+  </footer>
+
+  <script>
+  (function(){
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var scenes = [].slice.call(document.querySelectorAll('section.scene, section.outro'));
+    var layers = [].slice.call(document.querySelectorAll('.layer[data-speed]'));
+    var nav = document.getElementById('nav');
+    var progress = document.getElementById('progress');
+    var dotsWrap = document.getElementById('dots');
+
+    // --- construir dots ---
+    var dotEls = scenes.map(function(s, i){
+      var b = document.createElement('button');
+      b.title = s.getAttribute('data-dot') || ('Sección ' + (i+1));
+      b.addEventListener('click', function(){ s.scrollIntoView({behavior: reduce?'auto':'smooth'}); });
+      dotsWrap.appendChild(b);
+      return b;
+    });
+
+    var ticking = false;
+    function onScroll(){
+      if(!ticking){ window.requestAnimationFrame(update); ticking = true; }
+    }
+    function update(){
+      var vh = window.innerHeight;
+      // parallax
+      if(!reduce){
+        for(var i=0;i<layers.length;i++){
+          var el = layers[i];
+          var host = el.parentElement;
+          var r = host.getBoundingClientRect();
+          var center = r.top + r.height/2;
+          var offset = center - vh/2;
+          var speed = parseFloat(el.getAttribute('data-speed')) || 0.15;
+          el.style.transform = 'translate3d(0,' + (-offset*speed).toFixed(1) + 'px,0)';
+        }
+      }
+      // progress
+      var doc = document.documentElement;
+      var max = doc.scrollHeight - vh;
+      var p = max>0 ? (doc.scrollTop || window.pageYOffset)/max : 0;
+      progress.style.width = (p*100).toFixed(2) + '%';
+      // header solid
+      if((window.pageYOffset||0) > vh*0.5){ nav.classList.add('solid'); } else { nav.classList.remove('solid'); }
+      ticking = false;
+    }
+    window.addEventListener('scroll', onScroll, {passive:true});
+    window.addEventListener('resize', update);
+    update();
+
+    // --- reveals + dot activo ---
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('in'); });
+    }, {threshold: 0.18});
+    document.querySelectorAll('.reveal').forEach(function(el){ if(!el.classList.contains('in')) io.observe(el); });
+
+    var ioDot = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          var idx = scenes.indexOf(e.target);
+          dotEls.forEach(function(d,i){ d.classList.toggle('active', i===idx); });
+        }
+      });
+    }, {threshold: 0.5});
+    scenes.forEach(function(s){ ioDot.observe(s); });
+  })();
+  </script>
+</body>
+</html>

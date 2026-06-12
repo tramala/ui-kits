@@ -1,0 +1,59 @@
+<!-- @dsCard group="Sitio" viewport="1280x860" name="Sitio del realizador — portada" subtitle="Hero a sangre, filmografía filtrable, bio y contacto" -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TRAMALATIERRA — Juan Alaimes</title>
+<link rel="stylesheet" href="../../styles.css">
+<script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+  body { margin: 0; }
+</style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const NS = window.TRAMALATIERRADesignSystem_b403e3;
+    const { SiteHeader, SiteFooter, Hero, WorkGrid } = NS;
+
+    function Bio() {
+      return (
+        <section style={{ padding: "var(--space-9) var(--gutter)", background: "var(--carbon-900)", borderTop: "var(--border-w) solid var(--border)", borderBottom: "var(--border-w) solid var(--border)" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1.4fr) minmax(0,1fr)", gap: "var(--space-8)", alignItems: "center", maxWidth: "var(--container-xl)", margin: "0 auto" }}>
+            <div>
+              <p className="t-label" style={{ marginBottom: 16 }}>Sobre · Juan Alaimes</p>
+              <blockquote style={{ margin: 0, border: "none", padding: 0, fontSize: "var(--text-2xl)" }}>
+                Realizador de documentales, diseñador gráfico y fotógrafo. Trabajo sobre el territorio, el agua y la memoria de las luchas.
+              </blockquote>
+              <p style={{ color: "var(--text-muted)", marginTop: 24, maxWidth: "54ch" }}>
+                TRAMALATIERRA es una marca personal y un modo de mirar: la cámara como herramienta para tramar relatos con la tierra y quienes la habitan. Inestable, de campo, en movimiento.
+              </p>
+            </div>
+            <div className="grain" style={{ aspectRatio: "3 / 4", background: "linear-gradient(160deg,#463a2c,#0e0b08)", borderRadius: "var(--radius-md)", border: "var(--border-w) solid var(--border)", position: "relative" }}>
+              <div style={{ position: "absolute", inset: 0, filter: "var(--img-bw)", background: "radial-gradient(80% 60% at 50% 30%, #8f7e69, transparent 60%)" }} />
+              <span style={{ position: "absolute", left: 14, bottom: 12, fontFamily: "var(--font-mono)", fontSize: "var(--text-2xs)", letterSpacing: "var(--tracking-label)", textTransform: "uppercase", color: "var(--hueso-050)" }}>Retrato · placeholder</span>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    function App() {
+      return (
+        <div style={{ background: "var(--bg)", minHeight: "100vh" }}>
+          <SiteHeader active="Obra" />
+          <Hero />
+          <WorkGrid />
+          <Bio />
+          <SiteFooter />
+        </div>
+      );
+    }
+    ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+  </script>
+</body>
+</html>
